@@ -26,7 +26,7 @@ Author: **Syed Salman Ali** – SOC Analyst, Senior Microsoft Student Ambassador
 
 ## Quick start
 ```bash
-git clone https://github.com/<your-username>/microsoft-security-labs.git
+git clone https://github.com/<Salmanali9090>/microsoft-security-labs.git
 cd microsoft-security-labs
 pip install -r requirements-dev.txt
 pytest -q
