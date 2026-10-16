@@ -1,0 +1,11 @@
+__pycache__/
+.pytest_cache/
+.env
+*.env
+*.pem
+*.pfx
+*.key
+.venv/
+.DS_Store
+node_modules/
+package-lock.json
