@@ -1,0 +1,15 @@
+// Name: Azure RBAC role assignment by an unapproved caller
+// Description: Successful role-assignment writes made by identities not on an approved list.
+// MITRE: T1098.003 (Account Manipulation: Additional Cloud Roles)
+// Tables: AzureActivity
+// Status: SIMULATED - logic verified offline on synthetic data; NOT run in a live tenant
+// Assumptions: Azure Activity logs are connected to the workspace; operation name MICROSOFT.AUTHORIZATION/ROLEASSIGNMENTS/WRITE.
+// Limitations: ActivityStatusValue wording can differ by log version - both "Success" and "Succeeded" are accepted here; confirm in your data.
+// Tuning: replace approvedCallers with your real change-management identities (never commit real names to a public repo).
+let approvedCallers = dynamic(["it.admin@contoso.example"]);
+AzureActivity
+| where TimeGenerated > ago(1d)
+| where OperationNameValue =~ "MICROSOFT.AUTHORIZATION/ROLEASSIGNMENTS/WRITE"
+| where ActivityStatusValue in~ ("Success", "Succeeded")
+| where Caller !in~ (approvedCallers)
+| project TimeGenerated, Caller, CallerIpAddress, ResourceGroup, OperationNameValue, ActivityStatusValue

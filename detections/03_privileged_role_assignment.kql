@@ -1,0 +1,19 @@
+// Name: Privileged Microsoft Entra role assignment
+// Description: Surfaces assignments of high-privilege directory roles for analyst review.
+// MITRE: T1098.003 (Account Manipulation: Additional Cloud Roles)
+// Tables: AuditLogs
+// Status: SIMULATED - logic verified offline on synthetic data shaped like AuditLogs; NOT run in a live tenant
+// Assumptions: Operation names "Add member to role" / "Add eligible member to role"; role name in modifiedProperties as Role.DisplayName.
+// Limitations: Real PIM activity can use other OperationName values - check your own AuditLogs before relying on this rule.
+// Tuning: extend privRoles; join to your change-ticket data to separate approved from unapproved changes.
+let privRoles = dynamic(["Global Administrator","Privileged Role Administrator","Security Administrator","Exchange Administrator"]);
+AuditLogs
+| where TimeGenerated > ago(1d)
+| where OperationName in ("Add member to role", "Add eligible member to role")
+| extend Actor = tostring(InitiatedBy.user.userPrincipalName),
+         Target = tostring(TargetResources[0].userPrincipalName)
+| mv-expand prop = TargetResources[0].modifiedProperties
+| where tostring(prop.displayName) == "Role.DisplayName"
+| extend RoleName = trim('"', tostring(prop.newValue))
+| where RoleName in (privRoles)
+| project TimeGenerated, OperationName, Actor, Target, RoleName, CorrelationId

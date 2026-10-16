@@ -1,0 +1,5 @@
+TimeGenerated,DeviceName,AccountName,FileName,ProcessCommandLine,InitiatingProcessFileName
+2026-01-10T08:30:00Z,SYN-WKS-014,alice,powershell.exe,powershell.exe -File C:\Scripts\backup.ps1,taskeng.exe
+2026-01-10T09:00:00Z,SYN-WKS-021,carol,pwsh.exe,pwsh.exe -Command Get-Process,explorer.exe
+2026-01-10T09:42:00Z,SYN-WKS-014,alice,powershell.exe,powershell.exe -NoP -W Hidden -enc VwByAGkAdABlAC0ATwB1AHQAcAB1AHQAIAAnAHMAeQBuAHQAaABlAHQAaQBjAC0AbABhAGIALQBwAGEAeQBsAG8AYQBkAC0AYgBlAG4AaQBnAG4AJwA=,winword.exe
+2026-01-10T09:43:00Z,SYN-WKS-014,alice,notepad.exe,notepad.exe notes.txt,explorer.exe

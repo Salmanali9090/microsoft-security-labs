@@ -1,0 +1,13 @@
+// Name: PowerShell launched with an encoded command
+// Description: Flags -EncodedCommand style launches, common in malware and living-off-the-land activity.
+// MITRE: T1059.001 (Command and Scripting Interpreter: PowerShell), T1027 (Obfuscated Files or Information)
+// Tables: DeviceProcessEvents
+// Status: SIMULATED - regex verified offline on synthetic command lines; NOT run in a live workspace
+// Assumptions: Defender XDR data is streamed to Sentinel (TimeGenerated). In Defender XDR Advanced Hunting use Timestamp instead.
+// Limitations: Legitimate admin tools also use -EncodedCommand; attackers can shorten or reorder switches in ways this regex misses.
+// Tuning: exclude known management tooling by InitiatingProcessFileName; decode the payload during triage.
+DeviceProcessEvents
+| where TimeGenerated > ago(1d)
+| where FileName in~ ("powershell.exe", "pwsh.exe")
+| where ProcessCommandLine matches regex @"(?i)\s-(e|ec|enc|encodedcommand)\s+[A-Za-z0-9+/=]{20,}"
+| project TimeGenerated, DeviceName, AccountName, FileName, ProcessCommandLine, InitiatingProcessFileName

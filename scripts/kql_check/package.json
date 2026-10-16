@@ -1,0 +1,6 @@
+{
+  "name": "kql-check",
+  "private": true,
+  "description": "Syntax/semantic check of repository KQL using Microsoft's open-source Kusto.Language parser",
+  "dependencies": { "@kusto/language-service-next": "12.4.1" }
+}

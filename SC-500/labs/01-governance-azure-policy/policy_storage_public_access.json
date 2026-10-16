@@ -1,0 +1,26 @@
+{
+  "properties": {
+    "displayName": "[Lab] Storage accounts should not allow public blob access",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "description": "Teaching policy: flags storage accounts where allowBlobPublicAccess is not explicitly false. For production, evaluate the built-in policy for this control first.",
+    "metadata": { "category": "Storage", "version": "1.0.0" },
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "allowedValues": ["Audit", "Deny", "Disabled"],
+        "defaultValue": "Audit",
+        "metadata": { "displayName": "Effect", "description": "Start with Audit, move to Deny after reviewing impact." }
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          { "field": "type", "equals": "Microsoft.Storage/storageAccounts" },
+          { "field": "Microsoft.Storage/storageAccounts/allowBlobPublicAccess", "notEquals": false }
+        ]
+      },
+      "then": { "effect": "[parameters('effect')]" }
+    }
+  }
+}

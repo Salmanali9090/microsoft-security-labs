@@ -1,0 +1,23 @@
+// Name: Successful sign-in after repeated failures (same user + IP)
+// Description: Possible successful credential guessing.
+// MITRE: T1110 (Brute Force), T1078.004 (Valid Accounts: Cloud Accounts)
+// Tables: SigninLogs
+// Status: SIMULATED - logic verified offline on synthetic data; NOT run in a live Microsoft Sentinel tenant
+// Assumptions: ResultType 0 = success, 50126 = bad credentials.
+// Limitations: Does not consider MFA outcome or Conditional Access result; users who mistype often may trigger it.
+// Tuning: add MFA/Conditional Access context; exclude password-reset flows.
+let failThreshold = 5;
+let maxGap = 30m;
+let failures = SigninLogs
+    | where TimeGenerated > ago(1d)
+    | where ResultType == "50126"
+    | summarize Fails = count(), LastFail = max(TimeGenerated) by UserPrincipalName, IPAddress
+    | where Fails >= failThreshold;
+let successes = SigninLogs
+    | where TimeGenerated > ago(1d)
+    | where ResultType == "0"
+    | project SuccessTime = TimeGenerated, UserPrincipalName, IPAddress, AppDisplayName;
+failures
+| join kind=inner successes on UserPrincipalName, IPAddress
+| where SuccessTime > LastFail and SuccessTime - LastFail <= maxGap
+| project UserPrincipalName, IPAddress, Fails, LastFail, SuccessTime, AppDisplayName

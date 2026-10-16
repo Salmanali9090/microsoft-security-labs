@@ -1,0 +1,36 @@
+{
+  "_note": "SYNTHETIC inventory for offline policy simulation",
+  "resources": [
+    {
+      "name": "stlabcompliant01",
+      "type": "Microsoft.Storage/storageAccounts",
+      "properties": {
+        "allowBlobPublicAccess": false,
+        "minimumTlsVersion": "TLS1_2",
+        "supportsHttpsTrafficOnly": true
+      }
+    },
+    {
+      "name": "stlabpublic02",
+      "type": "Microsoft.Storage/storageAccounts",
+      "properties": {
+        "allowBlobPublicAccess": true,
+        "minimumTlsVersion": "TLS1_2",
+        "supportsHttpsTrafficOnly": true
+      }
+    },
+    {
+      "name": "stlabdefault03",
+      "type": "Microsoft.Storage/storageAccounts",
+      "properties": {
+        "minimumTlsVersion": "TLS1_0",
+        "supportsHttpsTrafficOnly": false
+      }
+    },
+    {
+      "name": "kvlab01",
+      "type": "Microsoft.KeyVault/vaults",
+      "properties": {}
+    }
+  ]
+}

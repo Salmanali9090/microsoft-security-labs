@@ -1,0 +1,14 @@
+// Name: Access key regeneration on an Azure AI (Cognitive Services) account
+// Description: Control-plane key regeneration on AI resources can indicate credential rotation OR attacker persistence; review in context.
+// MITRE: T1098 (Account Manipulation), T1528 (Steal Application Access Token) - related, analyst judgement required
+// Tables: AzureActivity
+// Status: SIMULATED - logic verified offline on synthetic data; exact operation name NOT confirmed in a live tenant
+// Assumptions: The provider is MICROSOFT.COGNITIVESERVICES and the operation name contains REGENERATEKEY.
+// Limitations: Matches by substring on purpose because the exact operation string should be confirmed in your own AzureActivity data.
+// Tuning: compare Caller to your rotation runbook; alert only when the caller or time is unexpected.
+AzureActivity
+| where TimeGenerated > ago(1d)
+| where ResourceProviderValue =~ "MICROSOFT.COGNITIVESERVICES"
+| where OperationNameValue contains "REGENERATEKEY"
+| where ActivityStatusValue in~ ("Success", "Succeeded")
+| project TimeGenerated, Caller, CallerIpAddress, ResourceGroup, OperationNameValue
