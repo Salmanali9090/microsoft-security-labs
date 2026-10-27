@@ -1,0 +1,14 @@
+// Name: Sign-in timeline for one account
+// Description: Shows every sign-in attempt for a single account in time order, labelled success or failure, to see how failures lead to a success.
+// MITRE: none claimed - this query only builds a timeline
+// Tables: SigninLogs
+// Status: SIMULATED - logic verified offline on synthetic data; NOT run in a live Microsoft Sentinel workspace
+// Assumptions: suspectUser comes from the previous step; times are UTC as stored in TimeGenerated.
+// Limitations: Shows only sign-in events; it says nothing about activity inside the account after sign-in (use audit and cloud app logs for that).
+let suspectUser = "alice@contoso.example";
+SigninLogs
+| where TimeGenerated > ago(1d)
+| where UserPrincipalName == suspectUser
+| project TimeGenerated, IPAddress, AppDisplayName, ResultType,
+          Outcome = iff(ResultType == "0", "Success", "Failure")
+| order by TimeGenerated asc

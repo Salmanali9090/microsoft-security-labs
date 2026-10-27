@@ -1,0 +1,12 @@
+// Name: Successful sign-ins from a suspect IP
+// Description: Lists which accounts a suspect IP signed in to successfully, to find the accounts that need priority review.
+// MITRE: T1078.004 (Valid Accounts: Cloud Accounts) - possible, not proven by this query alone
+// Tables: SigninLogs
+// Status: SIMULATED - logic verified offline on synthetic data; NOT run in a live Microsoft Sentinel workspace
+// Assumptions: suspectIP comes from the previous triage step (a documentation-range IP in this lab).
+// Limitations: A successful sign-in is not proof of compromise; it does not show MFA, Conditional Access outcome or what the session did afterwards.
+let suspectIP = "203.0.113.10";
+SigninLogs
+| where TimeGenerated > ago(1d)
+| where IPAddress == suspectIP and ResultType == "0"
+| project TimeGenerated, UserPrincipalName, IPAddress, AppDisplayName

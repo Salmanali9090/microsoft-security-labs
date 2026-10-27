@@ -1,0 +1,19 @@
+// Name: Noisy source IPs in Entra ID sign-ins (investigation triage)
+// Description: Summarises sign-in activity per source IP and keeps IPs with many failed attempts, so an analyst can see scale, spread across accounts and whether any attempt succeeded.
+// MITRE: T1110.003 (Password Spraying) - supported only if DistinctUsers is high and attempts per user are low
+// Tables: SigninLogs
+// Status: SIMULATED - logic verified offline on synthetic data; NOT run in a live Microsoft Sentinel workspace
+// Assumptions: Microsoft Entra ID sign-in logs are sent to a Log Analytics workspace; ResultType "50126" = invalid username or password, "0" = success.
+// Limitations: Cannot prove who is behind the IP, cannot tell a spray from a shared NAT address by itself, and ignores sign-ins that were blocked before they were logged.
+let minFailures = 5;
+SigninLogs
+| where TimeGenerated > ago(1d)
+| summarize Attempts = count(),
+            Failures = countif(ResultType == "50126"),
+            Successes = countif(ResultType == "0"),
+            DistinctUsers = dcount(UserPrincipalName),
+            FirstSeen = min(TimeGenerated),
+            LastSeen = max(TimeGenerated)
+    by IPAddress
+| where Failures >= minFailures
+| order by Failures desc
